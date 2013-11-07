@@ -17,20 +17,20 @@ You should see at least some tests pass. (There are some intentionally failing s
 
 VIEWING AND EDITING THE SCENARIOS
 1. The scenarios are located at :
-/drools-reference-implementation/examples/insurance/src/test/resources/features
-There is only one scenario file, titled healthQuadrant.feature, in the folder.
+/drools-reference-implementation/examples/day-trader/src/test/resources/features
+There is only one scenario file, titled dayTrader.feature, in the folder.
 2. Open that file in your favorite text editor and add, remove or change scenarios as you please.
 3. Commit your changes back to GitHub.
 4. Go to the Jenkins project page linked above and verify that your commit is building by checking the Build History box on the left.
 5. You may also view the file in your web browser at:
-https://github.com/rhcdemo/bdd-brms/blob/master/drools-reference-implementation/examples/insurance/src/test/resources/features/healthQuadrant.feature
+https://github.com/rhcdemo/bdd-brms/blob/master/drools-reference-implementation/examples/day-trader/src/test/resources/features/dayTrader.feature
 For details on formatting your scenarios, see below.
 
 VIEWING AND EDITING THE RULES/DECISION TABLES
 1. The rules are located at:
-/drools-reference-implementation/examples/insurance/src/main/resources/rules
-There are two decision table files, SeverityLevels.xls and AssignQuadrants.xls
-2. Open whichever decision table you want to view/edit and add, remove or change the rules as you please
+/drools-reference-implementation/examples/day-trader/src/main/resources/rules
+There is one rules file, titled dayTrader_rules.drl, in the folder.
+2. Open that file in your favorite text editor and add, remove or change scenarios as you please.
 3. Commit your changes back to GitHub
 4. Go to the Jenkins project page linked above and verify that your commit is building by checking the Build History box on the left.
 For details on formatting your rules, see below.
@@ -51,37 +51,28 @@ All the scenarios in this project must follow this format:
 @{ScenarioTag}
 Scenario: {Scenario title as it will appear on Cucumber Report}
 
-Given a member "{name}"
+Given a current price of "{value}" for a stock "{name}"
 
-And "{name}" has condition "{condition}" of degree "{mild/severe}"
+And a day open of "{value}"
 
-And "{name}" has condition "{condition}" of degree "{mild/severe}"
+And a daily volatility of "{value}"
 
-When determining the health quadrant for "{name}"
+When determining an action for stock "{name}"
 
-Then "{name}" should be placed in Quadrant {number}
+Then "{action}" stock "{name}" (for "{value}" higher/lower)*
 
-And "{name}" {result}
+{name} must be the ticker symbol for the stock you want to use
+{value} must be a value for the corresponding field (assumes floating point notation)
+{action} must be one of the following:
+"ask to sell"
+"bid to buy"
+"do not ask to sell"
+"do not bid to buy"
 
-{name} can be any name you want to use
-{condition} must be one of {asthma, diabetes, cardiovascular, depression, anxiety, eatingDisorder}. You can assign more conditions using more And statements.
-{number} must be one of {1, 2, 3, 4}, according to what quadrant the member should be assigned to.
-{result} must be one of {receives standard care, is assigned a behavioral health case manager, is assigned a specialty disease care manager}. Again, with more And statements, you can have multiple results. Note that the result is not in quotation marks.
-You can also edit the existing scenarios using the same guidelines.
+* The "for '{value}' higher/lower" should only be added when the "ask to sell" or "bid to buy" actions are used. The value should be the USD above or below the current price that the stock should be traded at.
+
 
 FORMATTING RULES
--The excel parser looks for the keyword “RuleSet” to begin parsing for rules. Anything written to the left or above RuleSet is ignored and can be used for notes
--com.rhc.insurance.rules is the package location of the rule in the directory structure
--Import com.rhc.insurance.Member tells the rule to import the Member class
--FALSE Sequential says that the rules do not need to be fired in top to bottom order
--The keyword “RuleTable” tells the parser that rules are about to follow
--The words following RuleTable are used as an identifier for all the rules in that table, until the parser comes across another RuleTable keyword with a new title
--Each row in a rule table represents a single rule
--CONDITION tells the parser that the elements in that column are part of the LHS of the rule
--ACTION tells the parser that the lements in that column are part of the RHS of the rule
--PRIORITY allows you to set a priority ranking for the order in which the rules fire. This overrides the TRUE Sequential option if that’s set.
--The row below the CONDITION, ACTION or PRIORITY row is where the object that is being modified is specified. In our case, this is always Member. Merging the cells specifying Member for the conditions indicates that there is one member with all of the qualities listed below.
--The row below that indicates the action that is being taken. $param takes whatever is in the cell in that column and uses that
--The row below that is for note-taking to specify what is going on in that column
--All rows following that are rules
-
+-com.rhc.day-trader.rules is the package location of the rule in the directory structure
+-Import com.rhc.stock.* tells the rule to import the class in that package (Stock, StockDay, StockQuote)
+-Import com.rhc.trade.* tells the rule to import the class in that package (Trade, TradeRequest, TradeResponse)
